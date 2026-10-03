@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { CalendarDays, Heart, Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { SALON } from "../data/catalog";
 import { cn } from "../lib/format";
-import { currentUser, useStore } from "../store/store";
 import { ButtonLink } from "./Button";
 import Logo, { SocialIcon } from "./Logo";
 
@@ -31,7 +30,6 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
-  const user = currentUser(useStore());
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 12);
@@ -42,9 +40,6 @@ function Header() {
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
-
-  const accountTo = user ? (user.role === "admin" ? "/studio" : "/account") : "/signin";
-  const accountLabel = user ? (user.role === "admin" ? "Studio" : `Hi, ${user.firstName}`) : "Sign In";
 
   return (
     <header className={cn("sticky top-0 z-40 transition-all duration-500", scrolled ? "bg-ivory/90 shadow-[0_1px_0_var(--color-line)] backdrop-blur-md" : "bg-ivory")}>
@@ -72,9 +67,6 @@ function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
-          <Link to={accountTo} className="hidden items-center gap-2 text-sm font-medium text-ink-soft hover:text-ink sm:inline-flex">
-            <User className="size-4" aria-hidden /> {accountLabel}
-          </Link>
           <ButtonLink to="/book" size="md" className="hidden sm:inline-flex">
             Book Appointment
           </ButtonLink>
@@ -92,7 +84,7 @@ function Header() {
       {open ? (
         <div id="mobile-menu" className="fixed inset-x-0 top-18 bottom-0 z-40 flex animate-fade-up flex-col bg-ivory px-6 pt-6 pb-28 lg:hidden">
           <nav aria-label="Mobile" className="flex flex-col">
-            {[...NAV, { to: "/stylists", label: "Stylists" }, { to: "/reviews", label: "Reviews" }, { to: "/faq", label: "FAQ" }].map((n, i) => (
+            {[...NAV, { to: "/reviews", label: "Reviews" }, { to: "/faq", label: "FAQ" }].map((n, i) => (
               <NavLink
                 key={n.to}
                 to={n.to}
@@ -105,9 +97,6 @@ function Header() {
             ))}
           </nav>
           <div className="mt-auto flex flex-col gap-3">
-            <ButtonLink to={accountTo} variant="secondary" size="lg">
-              {accountLabel}
-            </ButtonLink>
             <ButtonLink to="/book" size="lg" arrow>
               Book Appointment
             </ButtonLink>
@@ -125,26 +114,18 @@ function MobileBar() {
   if (pathname.startsWith("/book") || /^\/services\/[^/]+$/.test(pathname)) return null;
   return (
     <nav aria-label="Quick actions" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory/95 px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md md:hidden">
-      <div className="flex items-center gap-2">
-        <Link to="/account/saved" className="flex min-h-12 flex-1 flex-col items-center justify-center text-[0.7rem] text-ink-soft">
-          <Heart className="size-5" aria-hidden /> Saved
-        </Link>
-        <Link to="/account/appointments" className="flex min-h-12 flex-1 flex-col items-center justify-center text-[0.7rem] text-ink-soft">
-          <CalendarDays className="size-5" aria-hidden /> Bookings
-        </Link>
-        <ButtonLink to="/book" size="lg" className="flex-[2.2]">
-          Book Now
-        </ButtonLink>
-      </div>
+      <ButtonLink to="/book" size="lg" className="w-full">
+        Book Now
+      </ButtonLink>
     </nav>
   );
 }
 
 function Footer() {
   const cols = [
-    { title: "Explore", links: [["Services", "/services"], ["Gallery", "/gallery"], ["About", "/about"], ["Stylists", "/stylists"], ["Find My Style", "/find-my-style"]] },
+    { title: "Explore", links: [["Services", "/services"], ["Gallery", "/gallery"], ["About", "/about"], ["Find My Style", "/find-my-style"]] },
     { title: "Help", links: [["FAQ", "/faq"], ["Contact", "/contact"], ["Policies", "/policies"], ["Cancellation Policy", "/policies#cancellation"]] },
-    { title: "Account", links: [["Sign In", "/signin"], ["My Bookings", "/account/appointments"], ["Saved Looks", "/account/saved"], ["Reviews", "/reviews"]] },
+    { title: "Visit", links: [["Reviews", "/reviews"], ["Gallery", "/gallery"], ["Contact", "/contact"], ["Studio login", "/studio/login"]] },
   ];
   return (
     <footer className="bg-ink pb-28 text-ivory/80 md:pb-0">

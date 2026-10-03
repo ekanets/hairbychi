@@ -49,7 +49,6 @@ export function ServiceCard({ service, className }: { service: Service; classNam
           className="aspect-[4/5] rounded-[var(--radius-card)]"
           zoom
         />
-        <HeartButton id={service.id} label={service.name} className="absolute top-3 right-3" />
         {service.consultation ? (
           <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-ink/80 px-3 py-1 text-[0.7rem] font-semibold tracking-wide text-ivory backdrop-blur">
             <Sparkles className="size-3" aria-hidden /> Consultation first

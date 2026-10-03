@@ -860,7 +860,7 @@ export const FAQS: { q: string; a: string; group: "Booking" | "Payments" | "Your
   {
     group: "Your appointment",
     q: "How do I reschedule or cancel?",
-    a: "Sign in and open your appointment, or use the link in your confirmation email. Changes made more than 24 hours ahead keep your deposit intact.",
+    a: "You'll receive an email once your request is reviewed. Use that email if you need to change or cancel.",
   },
   {
     group: "Your appointment",

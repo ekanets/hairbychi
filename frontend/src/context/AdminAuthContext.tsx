@@ -17,10 +17,15 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = getAdminToken();
-    setIsAuthenticated(Boolean(token));
-    setUsername(token ? "admin" : null);
-    setIsLoading(false);
+    const sync = () => {
+      const token = getAdminToken();
+      setIsAuthenticated(Boolean(token));
+      setUsername(token ? "admin" : null);
+      setIsLoading(false);
+    };
+    sync();
+    window.addEventListener("bbc-admin-unauthorized", sync);
+    return () => window.removeEventListener("bbc-admin-unauthorized", sync);
   }, []);
 
   const login = (token: string) => {

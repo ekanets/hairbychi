@@ -11,9 +11,10 @@ export interface Paginated<T> {
 export interface Service {
   id: string;
   name: string;
-  description: string;
-  photo_url: string;
+  description?: string;
+  photo_url?: string | null;
   price: string; // decimal string, e.g. "180.00"
+  sec_price?: string;
   duration_minutes: number;
 }
 
@@ -30,7 +31,9 @@ export type BookingStatus =
   | "pending"
   | "approved"
   | "declined"
-  | "cancelled"
+  | "cancelled_by_client"
+  | "cancelled_by_stylist"
+  | "completed"
   | "expired"
   | "payment_failed"
   | "manually_approved";
@@ -63,14 +66,19 @@ export interface BookingCreatePayload {
 }
 
 export interface BookingCreateResponse {
-  id: string;
+  booking_id: string;
   status: BookingStatus;
+  requested_start_time: string;
   service_end_time: string;
+  /** Present on the wire. Never render this for clients. */
+  calendar_blocked_until?: string;
+  deposit_amount: string | null;
   amount_due_today: string;
-  deposit_amount: string;
+  surcharge_enabled: boolean;
+  surcharge_amount: string;
+  total_charged_today: string;
   full_payment_required: boolean;
   strike_warning: boolean;
-  manage_token: string;
 }
 
 export interface PrecheckResponse {
@@ -102,38 +110,44 @@ export interface GuestBooking {
   client_name: string;
 }
 
+export interface AdminClientNested {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  strike_count: number;
+  high_risk_flag: boolean;
+}
+
+export interface AdminBookingItem {
+  id: string;
+  service_name: string;
+  price_at_booking: string;
+  duration_at_booking: number;
+}
+
 export interface AdminBookingListItem {
   id: string;
+  client: AdminClientNested;
+  items: AdminBookingItem[];
   status: BookingStatus;
+  payment_method: PaymentMethod;
   requested_start_time: string;
   service_end_time: string;
   calendar_blocked_until: string;
-  payment_method: PaymentMethod;
-  total_price: string;
-  deposit_amount: string;
-  amount_due_today: string;
+  deposit_amount: string | null;
+  deposit_captured: boolean;
+  deposit_waived: boolean;
+  refund_owed: boolean;
   full_payment_required: boolean;
+  is_archived: boolean;
+  arrived_status: "pending" | "arrived" | "no_show" | null;
   conflict_flag: boolean;
-  needs_resolution: boolean;
-  arrival_status: ArrivalStatus;
-  archived: boolean;
-  client_id: string;
-  client_name: string;
-  client_email: string;
-  client_phone: string;
+  created_at: string;
+  decided_at: string | null;
 }
 
-export interface AdminBookingDetail extends AdminBookingListItem {
-  items: BookingItem[];
-  proof_url: string;
-  proof_note: string;
-  decline_reason: string;
-  manual_override_note: string;
-  arrival_note: string;
-  reschedule_count: number;
-  manage_token: string;
-  created_at: string;
-}
+export type AdminBookingDetail = AdminBookingListItem;
 
 export interface AvailabilityRecurringRule {
   id?: number;

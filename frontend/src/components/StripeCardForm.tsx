@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { PrimaryButton, ErrorBanner } from "./Shared";
+import { Button } from "../ui/Button";
 import { errorMessage } from "../lib/errors";
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
@@ -54,16 +54,20 @@ function InnerForm({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-stone-300 px-3 py-3">
+      <div className="rounded-2xl border border-line bg-white px-4 py-3.5">
         <CardElement options={CARD_ELEMENT_OPTIONS} />
       </div>
-      <ErrorBanner message={error} />
+      {error ? (
+        <p className="text-sm text-error" role="alert">
+          {error}
+        </p>
+      ) : null}
       {confirmed ? (
-        <p className="text-sm font-medium text-emerald-700">Card verified ✓</p>
+        <p className="text-sm font-medium text-success">Card saved. Nothing has been charged.</p>
       ) : (
-        <PrimaryButton onClick={handleConfirm} disabled={!stripe || submitting || disabled}>
-          {submitting ? "Verifying card…" : "Verify card"}
-        </PrimaryButton>
+        <Button type="button" onClick={handleConfirm} disabled={!stripe || submitting || disabled}>
+          {submitting ? "Verifying card…" : "Save card"}
+        </Button>
       )}
     </div>
   );
@@ -80,9 +84,9 @@ export default function StripeCardForm({
 }) {
   if (!stripePromise) {
     return (
-      <div className="rounded-lg border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-sm text-stone-500">
-        Stripe is not configured in this environment (missing publishable key).
-      </div>
+      <p className="rounded-2xl border border-dashed border-sand-deep bg-cream px-4 py-3 text-sm text-muted">
+        Card verification isn't configured in this environment.
+      </p>
     );
   }
   if (!clientSecret) return null;

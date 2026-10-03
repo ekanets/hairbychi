@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, CalendarCheck, Gem, Leaf, Search, Sparkles, Tag, Users } from "lucide-react";
-import { CATEGORIES, FAQS, SALON } from "../../data/catalog";
-import { cn, dateKey } from "../../lib/format";
+import { FAQS, SALON } from "../../data/catalog";
+import type { ArtKey, Tone } from "../../data/types";
+import { useCatalog } from "../../lib/catalog";
+import { cn, dateKey, duration } from "../../lib/format";
+import { money as cad } from "../../lib/timezone";
 import { useStore } from "../../store/store";
 import BeforeAfter from "../../ui/BeforeAfter";
 import { ButtonLink, Button } from "../../ui/Button";
 import { Container, Reveal, SectionHeading, Stars } from "../../ui/bits";
-import { ReviewCard, ServiceCard, StylistCard, priceLabel } from "../../ui/cards";
+import { ReviewCard, StylistCard, priceLabel } from "../../ui/cards";
 import FaqList from "../../ui/Faq";
 import Photo from "../../ui/Photo";
 import { SocialIcon } from "../../ui/Logo";
@@ -104,18 +107,14 @@ function Hero() {
 }
 
 function QuickBook() {
-  const s = useStore();
   const nav = useNavigate();
+  const { categories, services } = useCatalog();
   const [service, setService] = useState("");
-  const [stylist, setStylist] = useState("any");
   const [date, setDate] = useState("");
-  const svc = s.services.find((x) => x.id === service);
-  const stylists = svc ? s.stylists.filter((st) => svc.stylistIds.includes(st.id)) : s.stylists;
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const q = new URLSearchParams();
     if (service) q.set("service", service);
-    if (stylist !== "any") q.set("stylist", stylist);
     if (date) q.set("date", date);
     nav(`/book?${q}`);
   };
@@ -123,32 +122,21 @@ function QuickBook() {
   return (
     <Container className="relative z-10 -mt-4 mb-4 md:-mt-8">
       <Reveal>
-        <form onSubmit={submit} className="grid gap-1 rounded-[1.75rem] bg-white p-3 shadow-[0_30px_60px_-30px_rgba(28,24,22,0.35)] ring-1 ring-line/70 md:grid-cols-[1.3fr_1fr_1fr_auto] md:items-center md:rounded-full md:p-2 md:pl-8">
+        <form onSubmit={submit} className="grid gap-1 rounded-[1.75rem] bg-white p-3 shadow-[0_30px_60px_-30px_rgba(28,24,22,0.35)] ring-1 ring-line/70 md:grid-cols-[1.6fr_1fr_auto] md:items-center md:rounded-full md:p-2 md:pl-8">
           <label className="flex flex-col gap-0.5 rounded-2xl px-4 py-3 md:border-r md:border-line md:py-1 md:pl-0">
             <span className="text-[0.68rem] font-semibold tracking-[0.2em] text-muted uppercase">Service</span>
             <select value={service} onChange={(e) => setService(e.target.value)} className={field}>
               <option value="">Select hairstyle</option>
-              {CATEGORIES.map((c) => (
-                <optgroup key={c.id} label={c.name}>
-                  {s.services
-                    .filter((x) => x.categoryId === c.id && x.active)
-                    .map((x) => (
-                      <option key={x.id} value={x.id}>
-                        {x.name}, {priceLabel(x)}
+              {(categories ?? []).map((category) => (
+                <optgroup key={category.id} label={category.name}>
+                  {services
+                    .filter((item) => item.categoryId === category.id)
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}, {cad(item.price)}
                       </option>
                     ))}
                 </optgroup>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-0.5 rounded-2xl px-4 py-3 md:border-r md:border-line md:py-1">
-            <span className="text-[0.68rem] font-semibold tracking-[0.2em] text-muted uppercase">Stylist</span>
-            <select value={stylist} onChange={(e) => setStylist(e.target.value)} className={field}>
-              <option value="any">Any stylist</option>
-              {stylists.map((st) => (
-                <option key={st.id} value={st.id}>
-                  {st.name}
-                </option>
               ))}
             </select>
           </label>
@@ -166,9 +154,8 @@ function QuickBook() {
 }
 
 function PopularServices() {
-  const s = useStore();
-  const ids = ["medium-knotless-braids", "silk-press", "wig-install", "cornrows", "boho-knotless-braids", "loc-retwist"];
-  const list = ids.map((id) => s.services.find((x) => x.id === id)).filter((x) => x && x.active);
+  const { services } = useCatalog();
+  const list = services.slice(0, 6);
   return (
     <section className="py-20 md:py-28">
       <Container>
@@ -189,8 +176,14 @@ function PopularServices() {
       </Container>
       <div className="no-scrollbar flex snap-x snap-mandatory scroll-px-5 gap-5 overflow-x-auto px-5 pb-2 md:mx-auto md:grid md:max-w-7xl md:grid-cols-2 md:gap-x-6 md:gap-y-14 md:overflow-visible md:px-10 lg:grid-cols-3">
         {list.map((svc, i) => (
-          <Reveal key={svc!.id} delay={(i % 3) * 90} className="w-[74%] shrink-0 snap-start sm:w-[45%] md:w-auto">
-            <ServiceCard service={svc!} />
+          <Reveal key={svc.id} delay={(i % 3) * 90} className="w-[74%] shrink-0 snap-start sm:w-[45%] md:w-auto">
+            <Link to={`/services/${svc.id}`} className="group block">
+              <Photo art="braids" tone="sand" src={svc.photo_url || undefined} alt={`${svc.name} hairstyle`} className="aspect-[4/5] rounded-[var(--radius-card)]" zoom />
+              <h3 className="mt-4 text-[1.6rem] leading-tight transition group-hover:text-gold-deep">{svc.name}</h3>
+              <p className="mt-1 text-sm text-muted">
+                {duration(svc.duration_minutes)} · {cad(svc.price)}
+              </p>
+            </Link>
           </Reveal>
         ))}
       </div>
@@ -203,27 +196,50 @@ function PopularServices() {
   );
 }
 
+const CATEGORY_LOOK: Record<string, { art: ArtKey; tone: Tone }> = {
+  braids: { art: "braids", tone: "cocoa" },
+  cornrows: { art: "cornrows", tone: "sand" },
+  crochet: { art: "curls", tone: "rose" },
+  locs: { art: "locs", tone: "gold" },
+  ponytail: { art: "bun", tone: "ivory" },
+  special: { art: "wig", tone: "blush" },
+  twists: { art: "twists", tone: "sand" },
+  weaving: { art: "straight", tone: "cocoa" },
+};
+
+function categoryLabel(name: string) {
+  return name.replace(/(^|\s)\S/g, (char) => char.toUpperCase());
+}
+
 function Categories() {
+  const { categories } = useCatalog();
+  const list = categories ?? [];
   return (
     <section className="bg-cream py-20 md:py-28">
       <Container>
         <SectionHeading eyebrow="Browse by category" title="Every texture, every occasion" sub="Hair styling is personal. Start with what you love and we'll take it from there." />
       </Container>
-      <div className="no-scrollbar flex snap-x scroll-px-5 gap-4 overflow-x-auto px-5 md:mx-auto md:grid md:max-w-7xl md:grid-cols-5 md:gap-5 md:overflow-visible md:px-10">
-        {CATEGORIES.map((c, i) => (
-          <Reveal key={c.id} delay={(i % 5) * 60} className="w-[42%] shrink-0 snap-start sm:w-[30%] md:w-auto">
-            <Link to={`/services?category=${c.id}`} className="group block">
-              <div className="relative overflow-hidden rounded-[var(--radius-card)]">
-                <Photo path={`categories/${c.id}`} art={c.art} tone={c.tone} alt={`${c.name} hairstyles`} className="aspect-[3/4]" zoom />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/0 to-transparent" aria-hidden />
-                <div className="absolute inset-x-0 bottom-0 p-4 text-ivory">
-                  <h3 className="text-2xl leading-none">{c.name}</h3>
-                  <p className="mt-1 text-[0.72rem] leading-snug text-ivory/80">{c.blurb}</p>
+      <div className="no-scrollbar flex snap-x scroll-px-5 gap-4 overflow-x-auto px-5 md:mx-auto md:grid md:max-w-7xl md:grid-cols-4 md:gap-5 md:overflow-visible md:px-10">
+        {list.map((c, i) => {
+          const look = CATEGORY_LOOK[c.name.toLowerCase()] ?? { art: "braids" as const, tone: "sand" as const };
+          const name = categoryLabel(c.name);
+          return (
+            <Reveal key={c.id} delay={(i % 4) * 60} className="w-[42%] shrink-0 snap-start sm:w-[30%] md:w-auto">
+              <Link to={`/services?category=${c.id}`} className="group block">
+                <div className="relative overflow-hidden rounded-[var(--radius-card)]">
+                  <Photo art={look.art} tone={look.tone} alt={`${name} hairstyles`} className="aspect-[3/4]" zoom />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/0 to-transparent" aria-hidden />
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-ivory">
+                    <h3 className="text-2xl leading-none">{name}</h3>
+                    <p className="mt-1 text-[0.72rem] leading-snug text-ivory/80">
+                      {c.services.length} {c.services.length === 1 ? "style" : "styles"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </Reveal>
-        ))}
+              </Link>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );
@@ -232,7 +248,7 @@ function Categories() {
 function WhyUs() {
   const items = [
     { icon: Leaf, title: "Healthy Hair First", body: "We create beautiful styles without compromising the health of your hair." },
-    { icon: CalendarCheck, title: "Easy Online Booking", body: "Choose your style, stylist and appointment time in minutes." },
+    { icon: CalendarCheck, title: "Easy Online Booking", body: "Choose your style and a time, then send a request." },
     { icon: Users, title: "Experienced Stylists", body: "Receive personalised care from professionals who specialise in your hair needs." },
     { icon: Tag, title: "Transparent Pricing", body: "See prices, add-ons and deposits before confirming your appointment." },
   ];
@@ -358,8 +374,8 @@ function GalleryPreview() {
 function HowItWorks() {
   const steps = [
     ["Choose your style", "Explore our services and find the perfect look."],
-    ["Pick your appointment", "Select your stylist, date and preferred time."],
-    ["Secure your booking", "Pay your deposit and receive instant confirmation."],
+    ["Pick your appointment", "Choose a service, date and time, then send your request."],
+    ["Send your request", "Tell us how you'll pay. You'll get an email once it's reviewed."],
     ["Come get styled", "Arrive, relax and leave looking amazing."],
   ];
   return (
@@ -434,11 +450,10 @@ function FirstTime() {
           <div className="relative z-10 p-8 md:p-14">
             <p className="eyebrow mb-4">First visit?</p>
             <h2 className="text-5xl leading-[1.02]">
-              Enjoy <em className="text-gold-deep">10% off</em> your first appointment.
+              Your first visit, <em className="text-gold-deep">clearly priced.</em>
             </h2>
             <p className="mt-4 max-w-sm leading-relaxed text-muted">
-              Use code <strong className="rounded-md bg-ivory px-2 py-0.5 font-semibold tracking-widest text-ink">WELCOME10</strong> at checkout. Not sure what to book? Our style finder
-              will point you in the right direction.
+              Choose a service, pick a time, and send a request. You'll receive an email once it's reviewed.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink to="/book" arrow>

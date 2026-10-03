@@ -9,14 +9,17 @@ import "@fontsource/cormorant-garamond/latin-500-italic.css";
 import "@fontsource-variable/manrope/wght.css";
 import "./index.css";
 import App from "./App.tsx";
+import { AdminAuthProvider } from "./context/AdminAuthContext";
 import { ToastProvider } from "./ui/Toast";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
+      <AdminAuthProvider>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </AdminAuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

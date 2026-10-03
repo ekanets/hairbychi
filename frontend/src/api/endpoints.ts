@@ -18,7 +18,7 @@ import type {
 // ---------------------------------------------------------------------------
 // Public
 // ---------------------------------------------------------------------------
-export const getCategories = () => apiClient.get<Paginated<Category>>("/categories").then((r) => r.data);
+export const getCategories = () => apiClient.get<Paginated<Category>>("/categories/").then((r) => r.data);
 
 export const getSlots = (date_from: string, date_to: string, required_duration_minutes: number) =>
   apiClient
@@ -29,7 +29,7 @@ export const precheckBooking = (service_ids: string[], email: string, phone: str
   apiClient.post<PrecheckResponse>("/bookings/precheck", { service_ids, email, phone }).then((r) => r.data);
 
 export const createBooking = (payload: BookingCreatePayload) =>
-  apiClient.post<BookingCreateResponse>("/bookings", payload).then((r) => r.data);
+  apiClient.post<BookingCreateResponse>("/bookings/", payload).then((r) => r.data);
 
 export const getBookingByToken = (token: string) =>
   apiClient.get<GuestBooking>(`/bookings/${token}`).then((r) => r.data);
@@ -40,8 +40,10 @@ export const cancelBookingByToken = (token: string) =>
 export const rescheduleBookingByToken = (token: string, new_start_time: string) =>
   apiClient.post<GuestBooking>(`/bookings/${token}/reschedule`, { new_start_time }).then((r) => r.data);
 
-export const createSetupIntent = () =>
-  apiClient.post<{ client_secret: string; setup_intent_id: string }>("/payments/setup-intent").then((r) => r.data);
+export const createSetupIntent = (client: { name: string; email: string; phone: string }) =>
+  apiClient
+    .post<{ client_secret: string; setup_intent_id: string; customer_id: string }>("/payments/setup-intent", client)
+    .then((r) => r.data);
 
 // ---------------------------------------------------------------------------
 // Admin

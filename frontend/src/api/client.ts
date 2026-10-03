@@ -4,12 +4,15 @@ import type { ApiErrorBody } from "./types";
 const normalizeApiBaseUrl = (value: string) => value.replace(/\/+$/, "").replace(/\/api$/, "");
 
 // Accept either the raw host (recommended) or a full /api URL, but never duplicate /api.
+// The browser always calls same-origin /api. Vite (dev) and vercel.json (deploy)
+// proxy that to VITE_API_BASE_URL. Railway does not send CORS headers, so a
+// direct browser call to the API origin cannot read the catalog.
 export const API_BASE_URL = normalizeApiBaseUrl(
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
 );
 
 export const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: "/api",
   timeout: 20000,
   withCredentials: true,
 });
@@ -25,8 +28,14 @@ export function setAdminToken(token: string | null) {
   else localStorage.removeItem(ADMIN_TOKEN_KEY);
 }
 
+function isAdminRequest(url?: string) {
+  if (!url) return false;
+  const path = url.startsWith("http") ? new URL(url).pathname : url;
+  return path.startsWith("/admin") || path.includes("/api/admin");
+}
+
 apiClient.interceptors.request.use((config) => {
-  if (config.url?.startsWith("/admin")) {
+  if (isAdminRequest(config.url)) {
     const token = getAdminToken();
     if (token) {
       config.headers = config.headers || {};
@@ -50,8 +59,12 @@ export class ApiRequestError extends Error {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiErrorBody>) => {
-    if (error.response?.status === 401 && error.config?.url?.startsWith("/admin")) {
+    if (
+      isAdminRequest(error.config?.url) &&
+      (error.response?.status === 401 || error.response?.status === 403)
+    ) {
       setAdminToken(null);
+      window.dispatchEvent(new Event("bbc-admin-unauthorized"));
     }
 
     if (error.code === "ERR_NETWORK") {

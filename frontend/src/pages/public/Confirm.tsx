@@ -52,8 +52,8 @@ export default function Confirm() {
         </dl>
       </Card>
 
-      <Link to={`/manage/${booking.manage_token}`}>
-        <PrimaryButton>Manage this booking</PrimaryButton>
+      <Link to="/book">
+        <PrimaryButton>Back to booking</PrimaryButton>
       </Link>
     </div>
   );

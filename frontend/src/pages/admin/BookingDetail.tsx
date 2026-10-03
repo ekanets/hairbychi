@@ -54,7 +54,7 @@ export default function BookingDetail() {
 
   const handleApprove = async () => {
     if (booking.payment_method === "offline") {
-      let proofUrl = booking.proof_url;
+      let proofUrl = "";
       if (proofFile) {
         try {
           const res = await adminUploadProof(proofFile);
@@ -74,7 +74,7 @@ export default function BookingDetail() {
     }
   };
 
-  const canApproveOffline = booking.payment_method === "offline" ? !!(proofFile || booking.proof_url) : true;
+  const canApproveOffline = booking.payment_method === "offline" ? !!proofFile : true;
 
   return (
     <div className="space-y-6">
@@ -83,14 +83,11 @@ export default function BookingDetail() {
       </Link>
 
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-stone-900">{booking.client_name}</h1>
+        <h1 className="text-2xl font-semibold text-stone-900">{booking.client.name}</h1>
         <StatusBadge status={booking.status} />
         {booking.conflict_flag && (
           <span className="rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700">conflict</span>
         )}
-        <Link to={`/admin/clients/${booking.client_id}`} className="text-sm text-brand-600 underline">
-          View client history
-        </Link>
       </div>
 
       <Card className="space-y-2 text-sm">
@@ -98,26 +95,21 @@ export default function BookingDetail() {
           <span className="text-stone-500">When: </span>
           {formatDateTime(booking.requested_start_time)} – {formatDateTime(booking.service_end_time)}
         </p>
-        <p className="text-xs text-stone-400">Buffer clears at {formatDateTime(booking.calendar_blocked_until)}</p>
         <p>
           <span className="text-stone-500">Contact: </span>
-          {booking.client_email} · {booking.client_phone}
+          {booking.client.email} · {booking.client.phone}
         </p>
         <ul className="list-disc pl-5">
-          {booking.items.map((item, i) => (
-            <li key={i}>
-              {item.name_snapshot} — {money(item.price_snapshot)} ({item.duration_snapshot} min)
+          {booking.items.map((item) => (
+            <li key={item.id}>
+              {item.service_name} — {money(item.price_at_booking)} ({item.duration_at_booking} min)
             </li>
           ))}
         </ul>
         <div className="flex gap-6 pt-1">
           <span>
-            <span className="text-stone-500">Total: </span>
-            {money(booking.total_price)}
-          </span>
-          <span>
-            <span className="text-stone-500">Due today: </span>
-            {money(booking.amount_due_today)}
+            <span className="text-stone-500">Deposit: </span>
+            {money(booking.deposit_amount ?? "0")}
           </span>
           <span className="text-stone-500">({booking.payment_method})</span>
         </div>
@@ -133,15 +125,11 @@ export default function BookingDetail() {
           {booking.payment_method === "offline" && (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-stone-700">Proof of payment</label>
-              {booking.proof_url ? (
-                <p className="text-sm text-emerald-700">Proof attached ✓</p>
-              ) : (
-                <input
-                  type="file"
-                  accept="image/*,application/pdf"
-                  onChange={(e) => setProofFile(e.target.files?.[0] || null)}
-                />
-              )}
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+              />
               <input
                 className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
                 placeholder="Note (optional)"
@@ -178,10 +166,9 @@ export default function BookingDetail() {
       {(booking.status === "approved" || booking.status === "manually_approved") && (
         <Card className="space-y-3">
           <h2 className="font-medium text-stone-900">Arrival</h2>
-          {booking.arrival_status !== "none" ? (
+          {booking.arrived_status && booking.arrived_status !== "pending" ? (
             <p className="text-sm text-stone-600">
-              Marked <strong>{booking.arrival_status.replace("_", " ")}</strong>
-              {booking.arrival_note && ` — ${booking.arrival_note}`}
+              Marked <strong>{booking.arrived_status.replace("_", " ")}</strong>
             </p>
           ) : (
             <div className="space-y-2">
@@ -234,12 +221,6 @@ export default function BookingDetail() {
         </Card>
       )}
 
-      {booking.decline_reason && (
-        <Card>
-          <p className="text-sm text-stone-500">Decline reason</p>
-          <p className="text-sm text-stone-800">{booking.decline_reason}</p>
-        </Card>
-      )}
     </div>
   );
 }

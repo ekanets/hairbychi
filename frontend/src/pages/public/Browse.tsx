@@ -13,7 +13,7 @@ export default function Browse() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAllPages<Category>("/categories")
+    fetchAllPages<Category>("/categories/")
       .then(setCategories)
       .catch(() => setError("Couldn't load services. Please refresh the page."));
   }, []);

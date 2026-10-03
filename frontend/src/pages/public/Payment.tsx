@@ -35,8 +35,8 @@ export default function Payment() {
   }, [guestDetails?.email, guestDetails?.phone]);
 
   useEffect(() => {
-    if (paymentMethod !== "online" || clientSecret) return;
-    createSetupIntent()
+    if (paymentMethod !== "online" || clientSecret || !guestDetails) return;
+    createSetupIntent(guestDetails)
       .then((res) => setClientSecret(res.client_secret))
       .catch(() => setError("Couldn't start card verification. Please try again."));
   }, [paymentMethod, clientSecret]);

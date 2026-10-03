@@ -1,71 +1,67 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const SITE_KEY = import.meta.env.VITE_CAPTCHA_SITE_KEY as string | undefined;
-const PROVIDER = (import.meta.env.VITE_CAPTCHA_PROVIDER as string | undefined) || "hcaptcha";
-
-const SCRIPT_SRC =
-  PROVIDER === "turnstile"
-    ? "https://challenges.cloudflare.com/turnstile/v0/api.js"
-    : "https://js.hcaptcha.com/1/api.js";
+const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 declare global {
   interface Window {
-    hcaptcha?: { render: (el: HTMLElement, opts: Record<string, unknown>) => void };
-    turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => void };
+    turnstile?: {
+      render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+      remove: (widgetId: string) => void;
+    };
   }
 }
 
 /**
- * Renders the configured CAPTCHA widget (BK-04) and reports the resulting
- * token via onVerify. With no VITE_CAPTCHA_SITE_KEY configured (local dev
- * against a backend running with CAPTCHA_BYPASS=True), renders a clearly
- * labelled stand-in instead of loading third-party scripts.
+ * Cloudflare Turnstile. The token is sent as captcha_token on POST /api/bookings/.
  */
 export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [loaded, setLoaded] = useState(false);
+  const onVerifyRef = useRef(onVerify);
+  onVerifyRef.current = onVerify;
 
   useEffect(() => {
     if (!SITE_KEY) return;
+    let cancelled = false;
+    let widgetId: string | undefined;
 
-    const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
-    if (existing) {
-      setLoaded(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => setLoaded(true);
-    document.head.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    if (!SITE_KEY || !loaded || !containerRef.current) return;
-    const api = PROVIDER === "turnstile" ? window.turnstile : window.hcaptcha;
-    if (api) {
-      api.render(containerRef.current, {
+    const render = () => {
+      if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
+      widgetId = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY,
-        callback: (token: string) => onVerify(token),
+        callback: (token: string) => onVerifyRef.current(token),
       });
+    };
+
+    if (window.turnstile) {
+      render();
+    } else {
+      const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
+      if (existing) {
+        existing.addEventListener("load", render);
+      } else {
+        const script = document.createElement("script");
+        script.src = SCRIPT_SRC;
+        script.async = true;
+        script.defer = true;
+        script.onload = render;
+        document.head.appendChild(script);
+      }
     }
-  }, [loaded]);
+
+    return () => {
+      cancelled = true;
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+    };
+  }, []);
 
   if (!SITE_KEY) {
     return (
-      <div className="rounded-lg border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-sm text-stone-500">
-        CAPTCHA disabled in this environment (no site key configured).
-        <button
-          type="button"
-          className="ml-2 text-brand-600 underline"
-          onClick={() => onVerify("dev-bypass-token")}
-        >
-          Continue
-        </button>
-      </div>
+      <p className="rounded-2xl border border-dashed border-sand-deep bg-cream px-4 py-3 text-sm text-muted">
+        The human check isn't configured in this environment.
+      </p>
     );
   }
 
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className="min-h-16" />;
 }

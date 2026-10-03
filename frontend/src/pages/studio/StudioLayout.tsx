@@ -1,52 +1,21 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
-import {
-  BarChart3,
-  CalendarDays,
-  ClipboardList,
-  CreditCard,
-  ExternalLink,
-  Image,
-  Inbox,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  MessageSquare,
-  Scissors,
-  Settings,
-  Tag,
-  Users,
-  UserSquare2,
-  X,
-} from "lucide-react";
+import { ClipboardList, ExternalLink, LogOut, Menu, X } from "lucide-react";
+import { useAdminAuth } from "../../context/AdminAuthContext";
 import { cn } from "../../lib/format";
-import { currentUser, signOut, useStore } from "../../store/store";
 import Logo from "../../ui/Logo";
 
-const NAV = [
-  { to: "/studio", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/studio/calendar", label: "Calendar", icon: CalendarDays },
-  { to: "/studio/appointments", label: "Appointments", icon: ClipboardList },
-  { to: "/studio/inbox", label: "Inbox", icon: Inbox, badge: true },
-  { to: "/studio/customers", label: "Customers", icon: Users },
-  { to: "/studio/services", label: "Services", icon: Scissors },
-  { to: "/studio/staff", label: "Staff", icon: UserSquare2 },
-  { to: "/studio/payments", label: "Payments", icon: CreditCard },
-  { to: "/studio/reviews", label: "Reviews", icon: MessageSquare },
-  { to: "/studio/discounts", label: "Discounts", icon: Tag },
-  { to: "/studio/gallery", label: "Gallery", icon: Image },
-  { to: "/studio/reports", label: "Reports", icon: BarChart3 },
-  { to: "/studio/settings", label: "Settings", icon: Settings },
-];
+const APP_ENV = import.meta.env.VITE_APP_ENV || "development";
+
+const NAV = [{ to: "/studio", label: "Requests", icon: ClipboardList, end: true }];
 
 export default function StudioLayout() {
-  const s = useStore();
-  const user = currentUser(s);
+  const { isAuthenticated, isLoading, logout } = useAdminAuth();
   const loc = useLocation();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [loc.pathname]);
-  if (!user || user.role !== "admin") return <Navigate to={`/studio/login?next=${encodeURIComponent(loc.pathname)}`} replace />;
-  const inbox = s.messages.filter((m) => !m.read).length + s.consultations.filter((c) => c.status === "new").length;
+  if (isLoading) return <div className="grid min-h-screen place-items-center bg-ink font-display text-2xl text-gold">Hair by Chi</div>;
+  if (!isAuthenticated) return <Navigate to="/studio/login" replace />;
 
   const nav = (
     <nav aria-label="Studio" className="flex flex-col gap-0.5">
@@ -63,7 +32,6 @@ export default function StudioLayout() {
           }
         >
           <n.icon className="size-4" aria-hidden /> {n.label}
-          {n.badge && inbox ? <span className="ml-auto rounded-full bg-gold px-2 text-[0.7rem] font-semibold text-ink">{inbox}</span> : null}
         </NavLink>
       ))}
     </nav>
@@ -79,7 +47,7 @@ export default function StudioLayout() {
           <Link to="/" className="flex min-h-10 items-center gap-3 rounded-xl px-3 text-ivory/65 hover:text-ivory">
             <ExternalLink className="size-4" aria-hidden /> View website
           </Link>
-          <button onClick={signOut} className="flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-ivory/65 hover:text-ivory">
+          <button onClick={() => void logout()} className="flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-ivory/65 hover:text-ivory">
             <LogOut className="size-4" aria-hidden /> Sign out
           </button>
         </div>
@@ -91,11 +59,23 @@ export default function StudioLayout() {
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </header>
-      {open ? <div className="fixed inset-x-0 top-16 bottom-0 z-30 overflow-y-auto bg-ink p-4 lg:hidden">{nav}</div> : null}
+      {open ? (
+        <div className="fixed inset-x-0 top-16 bottom-0 z-30 overflow-y-auto bg-ink p-4 lg:hidden">
+          {nav}
+          <button onClick={() => void logout()} className="mt-6 flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-sm text-ivory/65">
+            <LogOut className="size-4" aria-hidden /> Sign out
+          </button>
+        </div>
+      ) : null}
 
-      <main className="min-w-0 p-4 md:p-8 lg:p-10">
-        <Outlet />
-      </main>
+      <div className="min-w-0">
+        {APP_ENV === "staging" ? (
+          <p className="bg-gold py-1.5 text-center text-xs font-semibold tracking-[0.2em] text-ink uppercase">STAGING — not live</p>
+        ) : null}
+        <main className="p-4 md:p-8 lg:p-10">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

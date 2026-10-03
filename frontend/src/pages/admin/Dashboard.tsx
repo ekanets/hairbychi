@@ -137,14 +137,14 @@ export default function Dashboard() {
                     conflict
                   </span>
                 )}
-                {b.arrival_status !== "none" && (
+                {b.arrived_status && (
                   <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs text-stone-600">
-                    {b.arrival_status.replace("_", " ")}
+                    {b.arrived_status.replace("_", " ")}
                   </span>
                 )}
               </div>
               <p className="mt-1 text-sm text-stone-500">
-                {b.client_name} · {b.client_email} · {money(b.amount_due_today)} due
+                {b.client.name} · {b.client.email} · {money(b.deposit_amount ?? "0")} deposit
               </p>
             </Link>
           </Card>
@@ -181,7 +181,7 @@ function ResolutionQueueSection({
           <div key={b.id} className="flex items-center justify-between rounded-lg bg-white px-3 py-2">
             <div>
               <p className="text-sm font-medium text-stone-900">
-                {formatDate(b.requested_start_time)} · {formatTime(b.requested_start_time)} — {b.client_name}
+                {formatDate(b.requested_start_time)} · {formatTime(b.requested_start_time)} — {b.client.name}
               </p>
             </div>
             <div className="flex gap-2">
@@ -234,7 +234,7 @@ function ResolutionRescheduleModal({
   };
 
   return (
-    <Modal title={`Reschedule ${booking.client_name}`} onClose={onClose}>
+    <Modal title={`Reschedule ${booking.client.name}`} onClose={onClose}>
       <div className="space-y-3">
         <SlotPickerGrid requiredDurationMinutes={durationMinutes} onSelect={setSelectedSlot} selected={selectedSlot} />
         <ErrorBanner message={error} />
