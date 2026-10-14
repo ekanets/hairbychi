@@ -1,4 +1,4 @@
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 // Single business timezone — America/Regina (CST year-round, no DST).
 export const DISPLAY_TIMEZONE = "America/Regina";
@@ -17,6 +17,12 @@ export function formatTime(iso: string, fmt = "h:mm a"): string {
 
 export function formatRange(startIso: string, endIso: string): string {
   return `${formatDateTime(startIso)} – ${formatInTimeZone(new Date(endIso), DISPLAY_TIMEZONE, "h:mm a")} CST`;
+}
+
+/** Interpret a Regina wall-clock date and HH:MM as a UTC ISO timestamp. */
+export function reginaDateTimeToUtc(date: string, time: string): string {
+  const clock = time.length === 5 ? `${time}:00` : time;
+  return fromZonedTime(`${date}T${clock}`, DISPLAY_TIMEZONE).toISOString();
 }
 
 /** Local calendar date (YYYY-MM-DD) in the display timezone, for grouping slots. */

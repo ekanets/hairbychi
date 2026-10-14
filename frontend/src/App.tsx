@@ -22,6 +22,11 @@ const load = <T, K extends keyof T>(importer: () => Promise<T>, name: K) =>
 const StudioLayout = load(() => import("./pages/studio/StudioLayout"), "default");
 const StudioLogin = load(() => import("./pages/studio/Login"), "default");
 const PendingBookings = load(() => import("./pages/studio/PendingBookings"), "default");
+const CalendarBoard = load(() => import("./pages/studio/CalendarBoard"), "default");
+const StudioBooking = load(() => import("./pages/studio/BookingDetail"), "default");
+const StudioAvailability = load(() => import("./pages/studio/Availability"), "default");
+const StudioServices = load(() => import("./pages/studio/ServicesAdmin"), "default");
+const StudioClient = load(() => import("./pages/studio/ClientDetail"), "default");
 
 export default function App() {
   return (
@@ -67,7 +72,12 @@ export default function App() {
           </Suspense>
         }
       >
-        <Route index element={<PendingBookings />} />
+        <Route index element={<CalendarBoard />} />
+        <Route path="requests" element={<PendingBookings />} />
+        <Route path="bookings/:id" element={<StudioBooking />} />
+        <Route path="availability" element={<StudioAvailability />} />
+        <Route path="services" element={<StudioServices />} />
+        <Route path="clients/:id" element={<StudioClient />} />
       </Route>
     </Routes>
   );

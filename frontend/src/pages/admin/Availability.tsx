@@ -42,7 +42,7 @@ export default function Availability() {
         const base: Record<number, DayRow> = {};
         for (const wd of WEEKDAYS) base[wd.value] = { enabled: false, start_time: "09:00", end_time: "17:00" };
         for (const rule of rules) {
-          base[rule.weekday] = {
+          base[rule.day_of_week] = {
             enabled: true,
             start_time: rule.start_time.slice(0, 5),
             end_time: rule.end_time.slice(0, 5),
@@ -60,7 +60,7 @@ export default function Availability() {
     setSaved(false);
     try {
       const payload: AvailabilityRecurringRule[] = WEEKDAYS.filter((wd) => rows[wd.value].enabled).map((wd) => ({
-        weekday: wd.value,
+        day_of_week: wd.value,
         start_time: `${rows[wd.value].start_time}:00`,
         end_time: `${rows[wd.value].end_time}:00`,
       }));

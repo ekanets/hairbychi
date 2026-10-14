@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ApiRequestError } from "../../api/client";
 import { adminApproveBooking, adminDeclineBooking } from "../../api/endpoints";
 import type { AdminBookingListItem } from "../../api/types";
@@ -81,7 +82,9 @@ function RequestCard({ booking, onDone }: { booking: AdminBookingListItem; onDon
     <Panel>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-3xl">{booking.client.name}</h2>
+          <h2 className="font-display text-3xl">
+            <Link to={`/studio/bookings/${booking.id}`} className="hover:text-gold-deep">{booking.client.name}</Link>
+          </h2>
           <p className="mt-1 text-sm text-muted">
             {booking.client.email} · {booking.client.phone}
           </p>

@@ -1,13 +1,18 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
-import { ClipboardList, ExternalLink, LogOut, Menu, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Clock, ExternalLink, LogOut, Menu, Scissors, X } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { cn } from "../../lib/format";
 import Logo from "../../ui/Logo";
 
 const APP_ENV = import.meta.env.VITE_APP_ENV || "development";
 
-const NAV = [{ to: "/studio", label: "Requests", icon: ClipboardList, end: true }];
+const NAV = [
+  { to: "/studio", label: "Calendar", icon: CalendarDays, end: true },
+  { to: "/studio/requests", label: "Requests", icon: ClipboardList, end: false },
+  { to: "/studio/availability", label: "Availability", icon: Clock, end: false },
+  { to: "/studio/services", label: "Services", icon: Scissors, end: false },
+];
 
 export default function StudioLayout() {
   const { isAuthenticated, isLoading, logout } = useAdminAuth();

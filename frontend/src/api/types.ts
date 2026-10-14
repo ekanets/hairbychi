@@ -140,6 +140,8 @@ export interface AdminBookingListItem {
   deposit_waived: boolean;
   refund_owed: boolean;
   full_payment_required: boolean;
+  reschedule_source?: "client" | "stylist" | "" | null;
+  resolution_status?: "n/a" | "pending" | "resolved";
   is_archived: boolean;
   arrived_status: "pending" | "arrived" | "no_show" | null;
   conflict_flag: boolean;
@@ -150,38 +152,59 @@ export interface AdminBookingListItem {
 export type AdminBookingDetail = AdminBookingListItem;
 
 export interface AvailabilityRecurringRule {
-  id?: number;
-  weekday: number; // 0=Monday .. 6=Sunday
+  id?: string;
+  day_of_week: number; // 0=Monday .. 6=Sunday
   start_time: string; // "HH:MM:SS" or "HH:MM"
   end_time: string;
-  is_active?: boolean;
+}
+
+export interface AvailabilityBlockConflict {
+  booking_id: string;
+  client_name: string;
 }
 
 export interface AvailabilityBlock {
-  id: number;
-  date: string;
-  reason: string;
-  created_at: string;
+  blocked: boolean;
+  conflicts: AvailabilityBlockConflict[];
 }
 
 export interface AvailabilityException {
-  id: number;
+  id: string;
   date: string;
-  reason: string;
-  created_at: string;
+  reason: string | null;
+  resolution_status?: "n/a" | "pending" | "resolved";
+}
+
+export interface AdminClientHistory {
+  id: string;
+  status: BookingStatus;
+  requested_start_time: string;
+  arrived_status: "pending" | "arrived" | "no_show" | null;
+  no_show_note?: string | null;
+  reschedule_source?: "client" | "stylist" | "" | null;
+}
+
+export interface AdminClientStrike {
+  booking_id: string;
+  requested_start_time: string;
+  note: string | null;
 }
 
 export interface Client {
   id: string;
   name: string;
-  email: string;
-  phone: string;
+  email: string | null;
+  phone: string | null;
   strike_count: number;
-  reschedule_count_lifetime: number;
   high_risk_flag: boolean;
-  high_risk_cleared_note: string;
-  created_at: string;
-  bookings?: AdminBookingListItem[];
+  reschedule_count?: number;
+  reschedule_count_lifetime?: number;
+  high_risk_cleared_note?: string | null;
+  high_risk_cleared_by?: string | null;
+  high_risk_cleared_at?: string | null;
+  created_at?: string;
+  bookings?: AdminClientHistory[];
+  strikes?: AdminClientStrike[];
 }
 
 export interface ApiErrorBody {

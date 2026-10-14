@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import { fetchAllPages } from "../lib/pagination";
 import type {
   Paginated,
   Category,
@@ -85,16 +86,16 @@ export const adminApproveBooking = (id: string, body?: { proof_url?: string; pro
 export const adminDeclineBooking = (id: string, reason?: string) =>
   apiClient.post<AdminBookingDetail>(`/admin/bookings/${id}/decline`, { reason }).then((r) => r.data);
 
-export const adminBatchBookings = (booking_ids: string[], action: "approve" | "decline" | "archive") =>
+export const adminBatchBookings = (booking_ids: string[], action: "approve" | "cancel" | "archive") =>
   apiClient
-    .post<{ results: { id: string; success: boolean; error?: string }[] }>("/admin/bookings/batch", {
+    .post<{ results: { id: string; ok: boolean; status?: string; error?: string }[] }>("/admin/bookings/batch", {
       booking_ids,
       action,
     })
     .then((r) => r.data);
 
-export const adminMarkArrival = (id: string, arrival_status: "arrived" | "no_show", note?: string) =>
-  apiClient.post<AdminBookingDetail>(`/admin/bookings/${id}/arrival`, { arrival_status, note }).then((r) => r.data);
+export const adminMarkArrival = (id: string, status: "arrived" | "no_show", note?: string) =>
+  apiClient.post<AdminBookingDetail>(`/admin/bookings/${id}/arrival`, { status, note: note ?? "" }).then((r) => r.data);
 
 export const adminManualOverride = (id: string, note: string) =>
   apiClient.post<AdminBookingDetail>(`/admin/bookings/${id}/manual-override`, { note }).then((r) => r.data);
@@ -107,8 +108,7 @@ export const adminResolveReschedule = (id: string, new_start_time: string) =>
     .post<AdminBookingDetail>(`/admin/bookings/${id}/resolve-reschedule`, { new_start_time })
     .then((r) => r.data);
 
-export const adminListAvailabilityExceptions = () =>
-  apiClient.get<AvailabilityException[]>("/admin/availability/exceptions").then((r) => r.data);
+export const adminListAvailabilityExceptions = () => fetchAllPages<AvailabilityException>("/admin/availability/exceptions");
 
 export const adminUploadProof = (file: File) => {
   const form = new FormData();
@@ -121,14 +121,18 @@ export const adminUploadProof = (file: File) => {
 };
 
 export const adminListRecurringAvailability = () =>
-  apiClient.get<AvailabilityRecurringRule[]>("/admin/availability/recurring").then((r) => r.data);
+  fetchAllPages<AvailabilityRecurringRule>("/admin/availability/recurring");
 
-export const adminBulkSetRecurringAvailability = (rules: AvailabilityRecurringRule[]) =>
-  apiClient.put<AvailabilityRecurringRule[]>("/admin/availability/recurring/bulk", rules).then((r) => r.data);
+export const adminListExceptions = () => fetchAllPages<AvailabilityException>("/admin/availability/exceptions");
+
+export const adminBulkSetRecurringAvailability = (rules: Pick<AvailabilityRecurringRule, "day_of_week" | "start_time" | "end_time">[]) =>
+  apiClient
+    .put("/admin/availability/recurring/bulk", { schedule: rules })
+    .then((r) => r.data);
 
 export const adminBlockDay = (date: string, reason?: string) =>
   apiClient
-    .post<AvailabilityBlock & { conflicts: AdminBookingListItem[] }>("/admin/availability/block", { date, reason })
+    .post<AvailabilityBlock>("/admin/availability/block", { date, reason: reason ?? "" })
     .then((r) => r.data);
 
 export const adminListResolutionQueue = () =>
@@ -148,12 +152,13 @@ export interface AdminService {
   id: string;
   category: string;
   name: string;
-  description: string;
-  photo_url: string;
+  description?: string | null;
+  photo_url?: string | null;
   price: string;
+  sec_price?: string;
   duration_minutes: number;
-  display_order: number;
-  is_active: boolean;
+  display_order?: number;
+  is_active?: boolean;
 }
 
 export const adminListServices = () => apiClient.get<Paginated<AdminService>>("/admin/services").then((r) => r.data);

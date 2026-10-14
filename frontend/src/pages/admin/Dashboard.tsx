@@ -62,7 +62,7 @@ export default function Dashboard() {
     });
   };
 
-  const runBatch = async (action: "approve" | "decline" | "archive") => {
+  const runBatch = async (action: "approve" | "cancel" | "archive") => {
     if (selected.size === 0) return;
     try {
       await adminBatchBookings(Array.from(selected), action);
@@ -109,8 +109,8 @@ export default function Dashboard() {
           <button className="text-brand-700 underline" onClick={() => runBatch("approve")}>
             Approve
           </button>
-          <button className="text-brand-700 underline" onClick={() => runBatch("decline")}>
-            Decline
+          <button className="text-brand-700 underline" onClick={() => runBatch("cancel")}>
+            Cancel
           </button>
           <button className="text-brand-700 underline" onClick={() => runBatch("archive")}>
             Archive

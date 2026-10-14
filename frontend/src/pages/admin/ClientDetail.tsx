@@ -64,7 +64,7 @@ export default function ClientDetail() {
         </p>
         <p>
           <span className="text-stone-500">Client since: </span>
-          {formatDate(client.created_at)}
+          {client.created_at ? formatDate(client.created_at) : "—"}
         </p>
         <div className="flex gap-6 pt-1">
           <span>
@@ -73,7 +73,7 @@ export default function ClientDetail() {
           </span>
           <span>
             <span className="text-stone-500">Reschedules used (lifetime): </span>
-            <strong>{client.reschedule_count_lifetime}</strong>
+            <strong>{client.reschedule_count ?? client.reschedule_count_lifetime ?? 0}</strong>
           </span>
         </div>
       </Card>
