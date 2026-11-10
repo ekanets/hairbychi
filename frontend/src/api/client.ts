@@ -80,6 +80,27 @@ apiClient.interceptors.response.use(
     if (body?.error) {
       return Promise.reject(new ApiRequestError(body.error.code, body.error.message, body.error.fields));
     }
+    const fields = fieldError(body);
+    if (fields) return Promise.reject(new ApiRequestError(fields.code, fields.message));
     return Promise.reject(new ApiRequestError("network_error", "Couldn't reach the server. Please try again."));
   }
 );
+
+// Django REST often returns { field: ["message"] } instead of { error: { code, message } }.
+// A failed Turnstile check arrives as { captcha_token: ["Verification failed or expired..."] }.
+function fieldError(data: unknown): { code: string; message: string } | null {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  const parts: string[] = [];
+  let code = "validation_error";
+  for (const [key, value] of Object.entries(data)) {
+    const text = Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === "string").join(" ")
+      : typeof value === "string"
+        ? value
+        : "";
+    if (!text) continue;
+    if (key === "captcha_token") code = "captcha_failed";
+    parts.push(text);
+  }
+  return parts.length ? { code, message: parts.join(" ") } : null;
+}

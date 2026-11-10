@@ -4,7 +4,7 @@ import type { AddOn, Category, GalleryItem, Review, Service, Stylist, WeekHours,
    Salon identity: edit these to rebrand.
    ------------------------------------------------------------------ */
 export const SALON = {
-  name: "Hair by Chi",
+  name: "Braids by Chii_e",
   tagline: "Modern protective styling, beautifully personal.",
   address: "214 Ossington Avenue, Toronto, ON M6J 2Z9",
   addressShort: "214 Ossington Ave, Toronto",
@@ -645,7 +645,7 @@ export const STYLISTS: Stylist[] = [
     appointments: 350,
     years: 9,
     specialties: ["Knotless braids", "Cornrows", "Boho styles"],
-    bio: "Chioma started braiding at twelve in her aunt's kitchen in Enugu and hasn't stopped since. She founded Hair by Chi to create the kind of calm, unhurried studio she always wished she could book: one where healthy hair comes first and every client leaves feeling like herself.",
+    bio: "Chioma started braiding at twelve in her aunt's kitchen in Enugu and hasn't stopped since. She founded Braids by Chii_e to create the kind of calm, unhurried studio she always wished she could book: one where healthy hair comes first and every client leaves feeling like herself.",
     quote: "Tension-free is non-negotiable. Beautiful hair should never hurt.",
     workDays: [1, 2, 4, 5, 6],
     start: "09:00",

@@ -1,4 +1,4 @@
-# Hair by Chi: Luxury Salon Website & Booking Platform
+# Braids by Chii_e: Luxury Salon Website & Booking Platform
 
 A premium, editorial website for a modern hair studio: discovery, a 5-step
 booking flow with add-ons and deposits, customer accounts, and a private

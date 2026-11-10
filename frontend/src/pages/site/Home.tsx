@@ -86,7 +86,7 @@ function Hero() {
               path="hero/main"
               art="braids"
               tone="gold"
-              alt="Client with long medium knotless braids, styled at Hair by Chi"
+              alt="Client with long medium knotless braids, styled at Braids by Chii_e"
               className="ml-auto aspect-[4/5] w-[82%] animate-fade-up rounded-t-[12rem] rounded-b-[var(--radius-card)] [animation-delay:120ms]"
             />
           </div>
@@ -256,10 +256,10 @@ function WhyUs() {
     <section className="py-20 md:py-28">
       <Container className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
-          <Photo path="studio/interior" art="bun" tone="ivory" alt="Inside the Hair by Chi studio" className="aspect-[4/5] rounded-t-[14rem] rounded-b-[var(--radius-card)] lg:max-w-md" />
+          <Photo path="studio/interior" art="bun" tone="ivory" alt="Inside the Braids by Chii_e studio" className="aspect-[4/5] rounded-t-[14rem] rounded-b-[var(--radius-card)] lg:max-w-md" />
         </Reveal>
         <div>
-          <SectionHeading eyebrow="Why Hair by Chi" title="Calm hands. Clear prices. Beautiful hair." />
+          <SectionHeading eyebrow="Why Braids by Chii_e" title="Calm hands. Clear prices. Beautiful hair." />
           <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
             {items.map((it, i) => (
               <Reveal key={it.title} delay={i * 80}>

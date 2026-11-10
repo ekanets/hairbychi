@@ -6,7 +6,7 @@ export default function Home() {
     <div className="space-y-16">
       <section className="text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-brand-600">Independent hair stylist</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">BraidsByChi</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">Braids by Chii_e</h1>
         <p className="mx-auto mt-4 max-w-md text-stone-500">
           Braids, twists, and styling — request a time that works for you and I'll confirm it personally.
         </p>

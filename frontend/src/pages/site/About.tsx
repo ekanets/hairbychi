@@ -10,7 +10,7 @@ const CHAPTERS = [
   {
     eyebrow: "Why we started",
     title: "A studio we wished we could book.",
-    body: "Hair by Chi began in a one-chair room in 2017 with a simple frustration: too many beautiful styles came with sore scalps, surprise prices and rushed appointments. Chioma set out to build the opposite: an unhurried space where your hair's health matters as much as the finish.",
+    body: "Braids by Chii_e began in a one-chair room in 2017 with a simple frustration: too many beautiful styles came with sore scalps, surprise prices and rushed appointments. Chioma set out to build the opposite: an unhurried space where your hair's health matters as much as the finish.",
   },
   {
     eyebrow: "What makes us different",
@@ -57,7 +57,7 @@ export default function About() {
             </div>
           </div>
           <div className="relative">
-            <Photo path="about/studio" art="bun" tone="gold" alt="Chioma styling a client in the Hair by Chi studio" className="aspect-[4/5] rounded-t-[16rem] rounded-b-[var(--radius-card)]" />
+            <Photo path="about/studio" art="bun" tone="gold" alt="Chioma styling a client in the Braids by Chii_e studio" className="aspect-[4/5] rounded-t-[16rem] rounded-b-[var(--radius-card)]" />
             <div className="absolute -bottom-6 -left-4 max-w-[240px] rounded-2xl bg-ink p-5 text-ivory shadow-2xl md:-left-10">
               <p className="font-display text-xl leading-snug italic">“Tension-free is non-negotiable. Beautiful hair should never hurt.”</p>
               <p className="mt-2 text-xs text-gold">Chioma, founder</p>

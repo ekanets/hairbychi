@@ -254,7 +254,7 @@ function ReviewModal({ appt, onClose, onDone }: { appt: Appointment; onClose: ()
         </fieldset>
         <Textarea label="Tell us about it" required minLength={10} value={text} onChange={(e) => setText(e.target.value)} placeholder="What did you love? Would you recommend your stylist?" />
         <Checkbox checked={photo} onChange={setPhoto}>
-          I'm happy for Hair by Chi to feature a photo of my style with this review
+          I'm happy for Braids by Chii_e to feature a photo of my style with this review
         </Checkbox>
         <p className="text-xs text-muted">Reviews are checked by the studio before they're published.</p>
         <Button type="submit" size="lg">

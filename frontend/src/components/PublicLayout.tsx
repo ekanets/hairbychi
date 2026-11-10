@@ -6,7 +6,7 @@ export default function PublicLayout() {
       <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
           <Link to="/" className="text-lg font-semibold text-brand-700">
-            BraidsByChi
+            Braids by Chii_e
           </Link>
           <nav className="text-sm text-stone-500">
             <Link to="/book" className="hover:text-brand-600">

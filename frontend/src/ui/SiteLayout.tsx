@@ -172,7 +172,7 @@ function Footer() {
       </div>
       <div className="border-t border-ivory/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-xs text-ivory/50 md:flex-row md:items-center md:justify-between md:px-10">
-          <p>© {new Date().getFullYear()} Hair by Chi. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Braids by Chii_e. All rights reserved.</p>
           <div className="flex gap-5">
             <Link to="/policies#privacy" className="hover:text-ivory">
               Privacy Policy

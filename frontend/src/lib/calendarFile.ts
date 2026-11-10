@@ -25,7 +25,7 @@ export function downloadIcs(a: Appointment, title: string) {
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Hair by Chi//Booking//EN",
+    "PRODID:-//Braids by Chii_e//Booking//EN",
     "BEGIN:VEVENT",
     `UID:${a.ref}@hairbychi`,
     `DTSTAMP:${stamp(new Date())}`,

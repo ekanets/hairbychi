@@ -89,8 +89,8 @@ export function SectionHeading({
 export function PageHeader({ eyebrow, title, sub, children }: { eyebrow?: string; title: ReactNode; sub?: ReactNode; children?: ReactNode }) {
   return (
     <header className="relative overflow-hidden border-b border-line/70 bg-cream">
-      <div className="pointer-events-none absolute -right-10 -bottom-16 font-display text-[12rem] leading-none text-sand select-none md:text-[18rem]" aria-hidden>
-        Chi
+      <div className="pointer-events-none absolute -right-6 -bottom-10 font-display text-[5.5rem] leading-none text-sand select-none md:text-[9rem]" aria-hidden>
+        Chii_e
       </div>
       <div className="relative mx-auto max-w-7xl px-5 pt-14 pb-12 md:px-10 md:pt-24 md:pb-16">
         {eyebrow ? <p className="eyebrow mb-4 animate-fade-up">{eyebrow}</p> : null}

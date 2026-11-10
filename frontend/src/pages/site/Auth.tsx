@@ -67,7 +67,7 @@ export function SignIn({ studio }: { studio?: boolean }) {
   };
 
   return (
-    <Shell title={studio ? "Studio sign in" : "Welcome back"} sub={studio ? "Staff and owner access to the Hair by Chi dashboard." : "Sign in to manage bookings, saved looks and rewards."}>
+    <Shell title={studio ? "Studio sign in" : "Welcome back"} sub={studio ? "Staff and owner access to the Braids by Chii_e dashboard." : "Sign in to manage bookings, saved looks and rewards."}>
       <form onSubmit={submit} className="flex flex-col gap-5">
         <Input label="Email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <PasswordInput value={password} onChange={setPassword} autoComplete="current-password" />

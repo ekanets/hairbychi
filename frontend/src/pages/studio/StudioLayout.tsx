@@ -19,7 +19,7 @@ export default function StudioLayout() {
   const loc = useLocation();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [loc.pathname]);
-  if (isLoading) return <div className="grid min-h-screen place-items-center bg-ink font-display text-2xl text-gold">Hair by Chi</div>;
+  if (isLoading) return <div className="grid min-h-screen place-items-center bg-ink font-display text-2xl text-gold">Braids by Chii_e</div>;
   if (!isAuthenticated) return <Navigate to="/studio/login" replace />;
 
   const nav = (

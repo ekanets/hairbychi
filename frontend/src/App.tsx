@@ -59,7 +59,7 @@ export default function App() {
       <Route
         path="/studio/login"
         element={
-          <Suspense fallback={<div className="grid min-h-screen place-items-center bg-ivory font-display text-2xl text-gold">Hair by Chi</div>}>
+          <Suspense fallback={<div className="grid min-h-screen place-items-center bg-ivory font-display text-2xl text-gold">Braids by Chii_e</div>}>
             <StudioLogin />
           </Suspense>
         }
@@ -67,7 +67,7 @@ export default function App() {
       <Route
         path="/studio"
         element={
-          <Suspense fallback={<div className="grid min-h-screen place-items-center bg-ink font-display text-2xl text-gold">Hair by Chi</div>}>
+          <Suspense fallback={<div className="grid min-h-screen place-items-center bg-ink font-display text-2xl text-gold">Braids by Chii_e</div>}>
             <StudioLayout />
           </Suspense>
         }

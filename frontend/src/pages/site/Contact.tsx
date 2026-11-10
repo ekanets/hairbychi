@@ -84,7 +84,7 @@ export default function Contact() {
             ))}
           </div>
           <div className="overflow-hidden rounded-[var(--radius-card)] ring-1 ring-line">
-            <iframe title="Map to Hair by Chi" src={SALON.mapEmbed} className="h-72 w-full grayscale-[40%]" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+            <iframe title="Map to Braids by Chii_e" src={SALON.mapEmbed} className="h-72 w-full grayscale-[40%]" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
           </div>
         </div>
 

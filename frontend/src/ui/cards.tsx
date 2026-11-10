@@ -135,7 +135,7 @@ export function ReviewCard({ review, service, className }: { review: Review; ser
         <div>
           <Stars rating={review.rating} />
           <p className="mt-1.5 text-sm font-semibold">{review.name}</p>
-          <p className="text-xs text-muted">{service?.name ?? "Hair by Chi client"}</p>
+          <p className="text-xs text-muted">{service?.name ?? "Braids by Chii_e client"}</p>
         </div>
         {review.withPhoto && service ? (
           <Photo art={service.art} tone={service.tone} alt={`${review.name}'s ${service.name}`} className="size-14 rounded-xl" />

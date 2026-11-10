@@ -41,7 +41,7 @@ export default function StudioLogin() {
         <Photo path="auth" art="wig" tone="gold" alt="" className="absolute inset-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent" aria-hidden />
         <p className="absolute right-12 bottom-12 left-12 font-display text-5xl leading-tight text-ivory">
-          Studio access for <em className="text-gold">Hair by Chi.</em>
+          Studio access for <em className="text-gold">Braids by Chii_e.</em>
         </p>
       </div>
       <div className="flex items-center justify-center bg-ivory px-5 py-14">

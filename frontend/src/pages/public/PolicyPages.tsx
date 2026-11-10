@@ -16,7 +16,7 @@ export function Terms() {
   return (
     <PolicyShell title="Terms of Service">
       <p>
-        BraidsByChi accepts booking requests only — submitting a request does not guarantee an appointment. Every
+        Braids by Chii_e accepts booking requests only — submitting a request does not guarantee an appointment. Every
         request is reviewed by the stylist and is either approved or declined before any appointment is confirmed.
       </p>
       <p>

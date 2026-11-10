@@ -1,4 +1,4 @@
-# BraidsByChi — Frontend
+# Braids by Chii_e — Frontend
 
 React + Vite + TypeScript + Tailwind v4. Talks only to the Django REST API
 in `../backend`. See the repo root `README.md` for the full picture.

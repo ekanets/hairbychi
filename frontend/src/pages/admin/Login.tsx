@@ -41,7 +41,7 @@ export default function Login() {
         )}
         <Card>
           <h1 className="mb-1 text-xl font-semibold text-stone-900">Stylist login</h1>
-          <p className="mb-6 text-sm text-stone-500">BraidsByChi Admin</p>
+          <p className="mb-6 text-sm text-stone-500">Braids by Chii_e Admin</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

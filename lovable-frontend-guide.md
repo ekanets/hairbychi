@@ -1,4 +1,4 @@
-# Lovable Frontend Guide — BraidsByChi
+# Lovable Frontend Guide — Braids by Chii_e
 
 Paste this brief into Lovable (or sync the repo and point Lovable at this file). Build the **client booking site** and **stylist admin dashboard** against the Railway Django API. Do not invent business rules that contradict the docs below.
 
@@ -7,7 +7,7 @@ Paste this brief into Lovable (or sync the repo and point Lovable at this file).
 ## 1. Role & constraints
 
 ### Product
-Guest-only online booking for a single independent hair stylist (BraidsByChi). Clients have **no accounts**. Every booking is a **request** that stays `pending` until the stylist approves or declines — this is **not** instant book.
+Guest-only online booking for a single independent hair stylist (Braids by Chii_e). Clients have **no accounts**. Every booking is a **request** that stays `pending` until the stylist approves or declines — this is **not** instant book.
 
 ### What you build
 - Public booking site (browse → cart → slots → details → payment → submit)
@@ -341,7 +341,7 @@ Do not fake high-risk full-payment until the API returns `full_payment_required`
 ## Prompt snippet (optional — paste into Lovable chat)
 
 ```
-You are building the BraidsByChi frontend (React + Vite): public guest booking + /admin dashboard.
+You are building the Braids by Chii_e frontend (React + Vite): public guest booking + /admin dashboard.
 Follow docs/lovable-frontend-guide.md strictly. API contracts are in docs/06-api-contracts.md.
 Request-based booking only — POST /api/bookings creates pending, not confirmed.
 UTC on wire, display America/Regina. Never send buffer in slot duration. Never show calendar_blocked_until to clients.

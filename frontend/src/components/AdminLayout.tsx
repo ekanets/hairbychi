@@ -22,7 +22,7 @@ export default function AdminLayout() {
       )}
       <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="text-lg font-semibold text-brand-700">BraidsByChi Admin</span>
+          <span className="text-lg font-semibold text-brand-700">Braids by Chii_e Admin</span>
           <nav className="flex items-center gap-4 text-sm">
             {navItems.map((item) => (
               <NavLink

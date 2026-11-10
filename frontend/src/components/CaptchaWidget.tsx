@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SITE_KEY = import.meta.env.VITE_CAPTCHA_SITE_KEY as string | undefined;
 const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
@@ -6,6 +6,7 @@ const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render
 declare global {
   interface Window {
     turnstile?: {
+      ready: (fn: () => void) => void;
       render: (el: HTMLElement, opts: Record<string, unknown>) => string;
       remove: (widgetId: string) => void;
     };
@@ -19,6 +20,7 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
   const containerRef = useRef<HTMLDivElement>(null);
   const onVerifyRef = useRef(onVerify);
   onVerifyRef.current = onVerify;
+  const [problem, setProblem] = useState<string | null>(null);
 
   useEffect(() => {
     if (!SITE_KEY) return;
@@ -26,11 +28,32 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
     let widgetId: string | undefined;
 
     const render = () => {
-      if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
-      widgetId = window.turnstile.render(containerRef.current, {
-        sitekey: SITE_KEY,
-        callback: (token: string) => onVerifyRef.current(token),
-      });
+      const turnstile = window.turnstile;
+      if (cancelled || !containerRef.current || !turnstile || widgetId) return;
+      const mount = () => {
+        if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
+        widgetId = window.turnstile.render(containerRef.current, {
+          sitekey: SITE_KEY,
+          callback: (token: string) => {
+            setProblem(null);
+            onVerifyRef.current(token);
+          },
+          "error-callback": () => {
+            setProblem("The human check couldn't load. Please refresh and try again.");
+            onVerifyRef.current("");
+          },
+          "expired-callback": () => {
+            setProblem("That check expired. Please confirm it again.");
+            onVerifyRef.current("");
+          },
+          "timeout-callback": () => {
+            setProblem("The human check timed out. Please try again.");
+            onVerifyRef.current("");
+          },
+        });
+      };
+      if (turnstile.ready) turnstile.ready(mount);
+      else mount();
     };
 
     if (window.turnstile) {
@@ -63,5 +86,10 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
     );
   }
 
-  return <div ref={containerRef} className="min-h-16" />;
+  return (
+    <div>
+      <div ref={containerRef} className="min-h-16" />
+      {problem ? <p className="mt-2 text-sm text-error">{problem}</p> : null}
+    </div>
+  );
 }
