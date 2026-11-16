@@ -5,7 +5,7 @@ import { slotsOn } from "../../lib/availability";
 import { clock, dateKey, parseDateKey } from "../../lib/format";
 import { useStore } from "../../store/store";
 import { ButtonLink } from "../../ui/Button";
-import { Container, EmptyState, PageHeader, Reveal, SectionHeading, Stars } from "../../ui/bits";
+import { Container, EmptyState, PageHeader, SectionHeading, Stars } from "../../ui/bits";
 import { ReviewCard, ServiceCard, StylistCard } from "../../ui/cards";
 import Photo from "../../ui/Photo";
 import { format } from "date-fns";
@@ -16,18 +16,18 @@ export function Stylists() {
   const s = useStore();
   return (
     <>
-      <PageHeader eyebrow="The team" title={<>Specialists for <em className="text-gold-deep">every texture</em></>} sub="Choose the stylist whose craft matches your look, or let us pair you with the first available." />
+      <PageHeader eyebrow="Your stylist" title={<>Meet <em className="text-gold-deep">Chioma</em></>} sub="She does every appointment herself." />
       <Container className="py-14 md:py-20">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:gap-x-6 lg:grid-cols-4">
+        <div className="max-w-xs">
           {s.stylists
             .filter((x) => x.active)
-            .map((st, i) => (
-              <Reveal key={st.id} delay={i * 70}>
+            .map((st) => (
+              <div key={st.id}>
                 <StylistCard stylist={st} />
-                <ButtonLink to={`/book?stylist=${st.id}`} variant="secondary" size="sm" className="mt-4 w-full">
-                  Book with {st.name}
+                <ButtonLink to="/book" variant="secondary" size="sm" className="mt-4 w-full">
+                  Book an appointment
                 </ButtonLink>
-              </Reveal>
+              </div>
             ))}
         </div>
       </Container>

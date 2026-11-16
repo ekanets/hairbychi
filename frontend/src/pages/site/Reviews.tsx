@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SALON } from "../../data/catalog";
-import { cn } from "../../lib/format";
 import { useStore } from "../../store/store";
 import { ButtonLink } from "../../ui/Button";
 import { Container, PageHeader, Reveal, Stars } from "../../ui/bits";
@@ -8,10 +7,9 @@ import { ReviewCard } from "../../ui/cards";
 
 export default function Reviews() {
   const s = useStore();
-  const [stylist, setStylist] = useState("all");
   const [photos, setPhotos] = useState(false);
   const published = s.reviews.filter((r) => r.status === "published");
-  const list = published.filter((r) => (stylist === "all" || r.stylistId === stylist) && (!photos || r.withPhoto));
+  const list = published.filter((r) => !photos || r.withPhoto);
   const dist = [5, 4, 3, 2, 1].map((n) => ({ n, count: published.filter((r) => r.rating === n).length }));
   const max = Math.max(1, ...dist.map((d) => d.count));
 
@@ -39,17 +37,7 @@ export default function Reviews() {
       </PageHeader>
       <Container className="py-12 md:py-16">
         <div className="mb-8 flex flex-wrap items-center gap-2">
-          {[{ id: "all", name: "All stylists" }, ...s.stylists].map((st) => (
-            <button
-              key={st.id}
-              onClick={() => setStylist(st.id)}
-              aria-pressed={stylist === st.id}
-              className={cn("min-h-10 rounded-full border px-4 text-sm", stylist === st.id ? "border-ink bg-ink text-ivory" : "border-line bg-white/60")}
-            >
-              {st.name}
-            </button>
-          ))}
-          <label className="ml-auto inline-flex min-h-10 cursor-pointer items-center gap-2 text-sm">
+          <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 text-sm">
             <input type="checkbox" checked={photos} onChange={(e) => setPhotos(e.target.checked)} className="size-4 accent-ink" /> With photos
           </label>
         </div>

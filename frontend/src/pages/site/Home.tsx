@@ -249,7 +249,7 @@ function WhyUs() {
   const items = [
     { icon: Leaf, title: "Healthy Hair First", body: "We create beautiful styles without compromising the health of your hair." },
     { icon: CalendarCheck, title: "Easy Online Booking", body: "Choose your style and a time, then send a request." },
-    { icon: Users, title: "Experienced Stylists", body: "Receive personalised care from professionals who specialise in your hair needs." },
+    { icon: Users, title: "With Chioma", body: "Every appointment is with Chioma, from the consultation through the finish." },
     { icon: Tag, title: "Transparent Pricing", body: "See prices, add-ons and deposits before confirming your appointment." },
   ];
   return (
@@ -312,22 +312,20 @@ function MeetStylists() {
     <section className="py-20 md:py-28">
       <Container>
         <SectionHeading
-          eyebrow="The team"
-          title="Meet your stylists"
-          sub="Specialists, not generalists. Book the hands that know your hair."
+          eyebrow="Your stylist"
+          title="Meet Chioma"
+          sub="She does every appointment herself."
           action={
-            <ButtonLink to="/stylists" variant="text" arrow>
-              All stylists
+            <ButtonLink to="/book" variant="text" arrow>
+              Book with Chioma
             </ButtonLink>
           }
         />
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-4">
+        <div className="max-w-xs">
           {s.stylists
             .filter((x) => x.active)
-            .map((st, i) => (
-              <Reveal key={st.id} delay={i * 80}>
-                <StylistCard stylist={st} />
-              </Reveal>
+            .map((st) => (
+              <StylistCard key={st.id} stylist={st} />
             ))}
         </div>
       </Container>

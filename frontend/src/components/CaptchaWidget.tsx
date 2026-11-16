@@ -6,7 +6,6 @@ const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render
 declare global {
   interface Window {
     turnstile?: {
-      ready: (fn: () => void) => void;
       render: (el: HTMLElement, opts: Record<string, unknown>) => string;
       remove: (widgetId: string) => void;
     };
@@ -27,47 +26,41 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
     let cancelled = false;
     let widgetId: string | undefined;
 
-    const render = () => {
-      const turnstile = window.turnstile;
-      if (cancelled || !containerRef.current || !turnstile || widgetId) return;
-      const mount = () => {
-        if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
-        widgetId = window.turnstile.render(containerRef.current, {
-          sitekey: SITE_KEY,
-          callback: (token: string) => {
-            setProblem(null);
-            onVerifyRef.current(token);
-          },
-          "error-callback": () => {
-            setProblem("The human check couldn't load. Please refresh and try again.");
-            onVerifyRef.current("");
-          },
-          "expired-callback": () => {
-            setProblem("That check expired. Please confirm it again.");
-            onVerifyRef.current("");
-          },
-          "timeout-callback": () => {
-            setProblem("The human check timed out. Please try again.");
-            onVerifyRef.current("");
-          },
-        });
-      };
-      if (turnstile.ready) turnstile.ready(mount);
-      else mount();
+    const mount = () => {
+      if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
+      widgetId = window.turnstile.render(containerRef.current, {
+        sitekey: SITE_KEY,
+        callback: (token: string) => {
+          setProblem(null);
+          onVerifyRef.current(token);
+        },
+        "error-callback": () => {
+          setProblem("The human check couldn't load. Please refresh and try again.");
+          onVerifyRef.current("");
+        },
+        "expired-callback": () => {
+          setProblem("That check expired. Please confirm it again.");
+          onVerifyRef.current("");
+        },
+        "timeout-callback": () => {
+          setProblem("The human check timed out. Please try again.");
+          onVerifyRef.current("");
+        },
+      });
     };
 
     if (window.turnstile) {
-      render();
+      mount();
     } else {
       const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
       if (existing) {
-        existing.addEventListener("load", render);
+        existing.addEventListener("load", mount);
       } else {
         const script = document.createElement("script");
         script.src = SCRIPT_SRC;
         script.async = true;
         script.defer = true;
-        script.onload = render;
+        script.onload = mount;
         document.head.appendChild(script);
       }
     }

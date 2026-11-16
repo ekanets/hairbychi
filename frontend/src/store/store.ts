@@ -297,13 +297,22 @@ function seedState(): State {
 // --- store core ----------------------------------------------------------
 
 function load(): State {
+  const seed = seedState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...seedState(), ...(JSON.parse(raw) as Partial<State>) };
+    if (raw) {
+      const saved = JSON.parse(raw) as Partial<State>;
+      // Catalog decides who is bookable, so a saved demo team cannot bring the stylist picker back.
+      const stylists = seed.stylists.map((st) => {
+        const prev = saved.stylists?.find((x) => x.id === st.id);
+        return prev ? { ...prev, active: st.active } : st;
+      });
+      return { ...seed, ...saved, stylists };
+    }
   } catch {
     /* storage unavailable (private mode) or corrupt: fall back to a fresh seed */
   }
-  return seedState();
+  return seed;
 }
 
 let state: State = load();

@@ -136,7 +136,6 @@ function RescheduleModal({ appt, onClose, onDone }: { appt: Appointment; onClose
   const s = useStore();
   const svc = s.services.find((x) => x.id === appt.serviceId)!;
   const [slot, setSlot] = useState<PickedSlot | null>(null);
-  const [anyStylist, setAnyStylist] = useState(false);
   const [error, setError] = useState("");
   const late = cancellationOutcome(s, appt).late;
   const confirm = () => {
@@ -157,10 +156,7 @@ function RescheduleModal({ appt, onClose, onDone }: { appt: Appointment; onClose
           Your appointment is less than {s.settings.cancellationHours} hours away. You can still move it, but late changes may forfeit your deposit per our policy.
         </p>
       ) : null}
-      <Checkbox checked={anyStylist} onChange={(v) => { setAnyStylist(v); setSlot(null); }} className="mb-5">
-        Show times with any stylist (not only {s.stylists.find((x) => x.id === appt.stylistId)?.name})
-      </Checkbox>
-      <DateTimePicker service={svc} stylistId={anyStylist ? "any" : appt.stylistId} minutes={appt.minutes} value={slot} onChange={setSlot} ignoreRef={appt.ref} />
+      <DateTimePicker service={svc} stylistId={appt.stylistId} minutes={appt.minutes} value={slot} onChange={setSlot} ignoreRef={appt.ref} />
       {error ? <p className="mt-4 text-sm text-error" role="alert">{error}</p> : null}
       <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted">Changing your appointment will release your current time slot.</p>

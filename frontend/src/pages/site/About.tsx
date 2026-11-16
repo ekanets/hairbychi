@@ -15,7 +15,7 @@ const CHAPTERS = [
   {
     eyebrow: "What makes us different",
     title: "Tension-free technique, transparent everything.",
-    body: "Every stylist on our team is trained in low-tension methods and scalp care. Prices, timings and deposits are published before you book, and your stylist checks in on comfort throughout. No guesswork, no pressure, no surprises.",
+    body: "Chioma works in low-tension methods and scalp care. Prices, timings and deposits are published before you book, and she checks in on comfort throughout. No guesswork, no pressure, no surprises.",
   },
   {
     eyebrow: "What to expect",
@@ -87,16 +87,16 @@ export default function About() {
       <section className="bg-cream py-20 md:py-28">
         <Container>
           <SectionHeading
-            eyebrow="The team"
-            title="Meet the stylists"
-            sub="Each specialist brings years of focused experience."
+            eyebrow="Your stylist"
+            title="Meet Chioma"
+            sub="She does every appointment herself."
             action={
               <ButtonLink to="/book" arrow>
-                Book with the team
+                Book with Chioma
               </ButtonLink>
             }
           />
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-4">
+          <div className="max-w-xs">
             {s.stylists
               .filter((x) => x.active)
               .map((st) => (
