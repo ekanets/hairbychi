@@ -160,10 +160,15 @@ function Footer() {
         <div>
           <h2 className="mb-4 font-sans text-xs font-semibold tracking-[0.25em] text-gold uppercase">Follow</h2>
           <ul className="space-y-3 text-sm">
-            {(["instagram", "tiktok", "facebook"] as const).map((n) => (
+            {(
+              [
+                ["instagram", "Instagram"],
+                ["whatsapp", "WhatsApp"],
+              ] as const
+            ).map(([n, label]) => (
               <li key={n}>
-                <a href={SALON[n]} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2.5 capitalize transition hover:text-ivory">
-                  <SocialIcon name={n} className="size-4" /> {n === "tiktok" ? "TikTok" : n}
+                <a href={SALON[n]} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2.5 transition hover:text-ivory">
+                  <SocialIcon name={n} className="size-4" /> {label}
                 </a>
               </li>
             ))}

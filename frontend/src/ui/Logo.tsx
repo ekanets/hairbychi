@@ -20,7 +20,7 @@ export default function Logo({ light, className, to = "/" }: { light?: boolean; 
   );
 }
 
-export function SocialIcon({ name, className }: { name: "instagram" | "tiktok" | "facebook"; className?: string }) {
+export function SocialIcon({ name, className }: { name: "instagram" | "whatsapp"; className?: string }) {
   const paths = {
     instagram: (
       <>
@@ -29,17 +29,11 @@ export function SocialIcon({ name, className }: { name: "instagram" | "tiktok" |
         <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" />
       </>
     ),
-    tiktok: (
+    whatsapp: (
       <path
-        d="M14.5 3v11.2a3.3 3.3 0 1 1-3.3-3.3M14.5 3c.4 2.6 2.2 4.4 5 4.6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
+        d="M12 3.6a8.2 8.2 0 0 0-7.1 12.3L3.6 20.4l4.6-1.2A8.2 8.2 0 1 0 12 3.6zm0 1.6a6.6 6.6 0 0 1 5.6 10.1l-.2.4.7 2.6-2.7-.7-.4.2A6.6 6.6 0 1 1 12 5.2z"
+        fill="currentColor"
       />
-    ),
-    facebook: (
-      <path d="M14 8h2.5V4.5H14c-2.5 0-4 1.7-4 4.2V11H7.5v3.5H10V21h3.5v-6.5H16l.5-3.5h-3V8.8c0-.5.3-.8.5-.8z" fill="currentColor" />
     ),
   };
   return (

@@ -77,7 +77,7 @@ export default function Contact() {
             <HoursTable />
           </div>
           <div className="flex gap-3">
-            {(["instagram", "tiktok", "facebook"] as const).map((n) => (
+            {(["instagram", "whatsapp"] as const).map((n) => (
               <a key={n} href={SALON[n]} target="_blank" rel="noreferrer" className="grid size-11 place-items-center rounded-full border border-line transition hover:border-ink hover:bg-ink hover:text-ivory" aria-label={n}>
                 <SocialIcon name={n} />
               </a>
