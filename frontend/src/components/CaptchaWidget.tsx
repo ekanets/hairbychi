@@ -23,11 +23,31 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
   const onVerifyRef = useRef(onVerify);
   onVerifyRef.current = onVerify;
   const [problem, setProblem] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!SITE_KEY) return;
     let cancelled = false;
     let widgetId: string | undefined;
+
+    const reveal = () => {
+      if (!cancelled) setReady(true);
+    };
+
+    const watch = (el: HTMLElement) => {
+      let frames = 0;
+      const tick = () => {
+        if (cancelled) return;
+        const frame = el.querySelector("iframe");
+        if (frame && frame.getBoundingClientRect().height > 8) {
+          reveal();
+          return;
+        }
+        frames += 1;
+        if (frames < 180) requestAnimationFrame(tick);
+      };
+      tick();
+    };
 
     const render = () => {
       const el = containerRef.current;
@@ -47,9 +67,11 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
         "retry-interval": 8000,
         callback: (token: string) => {
           setProblem(null);
+          reveal();
           onVerifyRef.current(token);
         },
         "error-callback": (code: string) => {
+          reveal();
           onVerifyRef.current("");
           if (code === "110200") {
             setProblem(
@@ -61,14 +83,17 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
           return false;
         },
         "expired-callback": () => {
+          reveal();
           setProblem("That check expired. Please confirm it again.");
           onVerifyRef.current("");
         },
         "timeout-callback": () => {
+          reveal();
           setProblem("The human check timed out. Please try again.");
           onVerifyRef.current("");
         },
       });
+      watch(el);
     };
 
     const mount = () => {
@@ -87,7 +112,10 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
         script.src = SCRIPT_SRC;
         script.async = true;
         script.onload = mount;
-        script.onerror = () => setProblem("The human check couldn't be reached. Please refresh and try again.");
+        script.onerror = () => {
+          reveal();
+          setProblem("The human check couldn't be reached. Please refresh and try again.");
+        };
         document.head.appendChild(script);
       }
     }
@@ -108,7 +136,22 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
 
   return (
     <div>
-      <div ref={containerRef} className="min-h-16" />
+      <div className="relative min-h-[65px] w-[300px] max-w-full">
+        <div ref={containerRef} className="min-h-[65px]" />
+        {ready ? null : (
+          <div
+            className="absolute inset-0 flex items-center gap-3 rounded-lg border border-line bg-white px-3"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="skeleton size-6 shrink-0 rounded-full" />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-ink">Loading the check</span>
+              <span className="mt-1 block text-xs text-muted">This only takes a moment.</span>
+            </span>
+          </div>
+        )}
+      </div>
       {problem ? (
         <p className="mt-2 text-sm text-error" role="alert">
           {problem}
