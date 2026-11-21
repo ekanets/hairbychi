@@ -30,6 +30,23 @@ export function localDateKey(iso: string): string {
   return formatInTimeZone(new Date(iso), DISPLAY_TIMEZONE, "yyyy-MM-dd");
 }
 
+/**
+ * One button per start instant. Overlapping weekly rules can return the same
+ * start many times; matching on that start would highlight every copy.
+ */
+export function uniqueByStart<T extends { start: string }>(slots: T[]): T[] {
+  const seen = new Set<string>();
+  const unique: T[] = [];
+  for (const slot of slots) {
+    const instant = new Date(slot.start).getTime();
+    const key = Number.isNaN(instant) ? slot.start : String(instant);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(slot);
+  }
+  return unique;
+}
+
 export function money(amount: string | number): string {
   const n = typeof amount === "string" ? parseFloat(amount) : amount;
   return `$${n.toFixed(2)} CAD`;

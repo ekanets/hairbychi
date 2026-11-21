@@ -10,7 +10,7 @@ import StripeCardForm from "../../components/StripeCardForm";
 import { useCatalog, type CatalogService } from "../../lib/catalog";
 import { errorMessage } from "../../lib/errors";
 import { cn, duration } from "../../lib/format";
-import { DISPLAY_TIMEZONE, formatDate, localDateKey, money as cad } from "../../lib/timezone";
+import { DISPLAY_TIMEZONE, formatDate, localDateKey, money as cad, uniqueByStart } from "../../lib/timezone";
 import { Button } from "../../ui/Button";
 import { Container } from "../../ui/bits";
 import { Checkbox, Input } from "../../ui/form";
@@ -166,7 +166,7 @@ export default function Book() {
 
   const grouped = useMemo(() => {
     const map = new Map<string, Slot[]>();
-    for (const slot of slots ?? []) {
+    for (const slot of uniqueByStart(slots ?? [])) {
       const key = localDateKey(slot.start);
       const list = map.get(key) ?? [];
       list.push(slot);

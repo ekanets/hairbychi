@@ -10,7 +10,7 @@ import { useStore } from "../../store/store";
 import BeforeAfter from "../../ui/BeforeAfter";
 import { ButtonLink, Button } from "../../ui/Button";
 import { Container, Reveal, SectionHeading, Stars } from "../../ui/bits";
-import { ReviewCard, StylistCard, priceLabel } from "../../ui/cards";
+import { ReviewCard, priceLabel } from "../../ui/cards";
 import FaqList from "../../ui/Faq";
 import Photo from "../../ui/Photo";
 import { SocialIcon } from "../../ui/Logo";
@@ -306,33 +306,6 @@ function Transformations() {
   );
 }
 
-function MeetStylists() {
-  const s = useStore();
-  return (
-    <section className="py-20 md:py-28">
-      <Container>
-        <SectionHeading
-          eyebrow="Your stylist"
-          title="Meet Chioma"
-          sub="She does every appointment herself."
-          action={
-            <ButtonLink to="/book" variant="text" arrow>
-              Book with Chioma
-            </ButtonLink>
-          }
-        />
-        <div className="max-w-xs">
-          {s.stylists
-            .filter((x) => x.active)
-            .map((st) => (
-              <StylistCard key={st.id} stylist={st} />
-            ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 function GalleryPreview() {
   const s = useStore();
   const items = s.gallery.slice(0, 5);
@@ -541,7 +514,6 @@ export default function Home() {
       <Categories />
       <WhyUs />
       <Transformations />
-      <MeetStylists />
       <GalleryPreview />
       <HowItWorks />
       <Reviews />

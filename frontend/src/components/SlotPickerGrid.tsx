@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { getSlots } from "../api/endpoints";
 import type { Slot } from "../api/types";
-import { formatDate, formatTime, localDateKey } from "../lib/timezone";
+import { formatDate, formatTime, localDateKey, uniqueByStart } from "../lib/timezone";
 import { Spinner, ErrorBanner } from "./Shared";
 
 const DAYS_AHEAD = 21;
@@ -30,7 +30,7 @@ export default function SlotPickerGrid({
 
   const grouped = useMemo(() => {
     const map = new Map<string, Slot[]>();
-    for (const slot of slots || []) {
+    for (const slot of uniqueByStart(slots || [])) {
       const key = localDateKey(slot.start);
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(slot);

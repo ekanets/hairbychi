@@ -8,7 +8,6 @@ import Book from "./pages/site/Book";
 import Confirmation from "./pages/site/Confirmation";
 import Gallery from "./pages/site/Gallery";
 import About from "./pages/site/About";
-import { StylistProfile, Stylists } from "./pages/site/Stylists";
 import Reviews from "./pages/site/Reviews";
 import Contact from "./pages/site/Contact";
 import { Faq, Policies } from "./pages/site/Info";
@@ -40,8 +39,8 @@ export default function App() {
         <Route path="/book/confirmed/:ref" element={<Navigate to="/book/sent" replace />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/about" element={<About />} />
-        <Route path="/stylists" element={<Stylists />} />
-        <Route path="/stylists/:id" element={<StylistProfile />} />
+        <Route path="/stylists" element={<Navigate to="/about" replace />} />
+        <Route path="/stylists/:id" element={<Navigate to="/about" replace />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<Faq />} />

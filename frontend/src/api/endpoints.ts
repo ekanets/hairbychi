@@ -125,10 +125,24 @@ export const adminListRecurringAvailability = () =>
 
 export const adminListExceptions = () => fetchAllPages<AvailabilityException>("/admin/availability/exceptions");
 
-export const adminBulkSetRecurringAvailability = (rules: Pick<AvailabilityRecurringRule, "day_of_week" | "start_time" | "end_time">[]) =>
-  apiClient
-    .put("/admin/availability/recurring/bulk", { schedule: rules })
-    .then((r) => r.data);
+export const adminDeleteRecurringAvailability = (id: string) =>
+  apiClient.delete(`/admin/availability/recurring/${id}`);
+
+/**
+ * The bulk endpoint only adds rules. Saving the weekly form has to delete the
+ * previous week first, or each save duplicates every day and the booking page
+ * shows the same time over and over.
+ */
+export const adminBulkSetRecurringAvailability = async (
+  rules: Pick<AvailabilityRecurringRule, "day_of_week" | "start_time" | "end_time">[],
+) => {
+  const existing = await adminListRecurringAvailability();
+  for (const rule of existing) {
+    if (rule.id) await adminDeleteRecurringAvailability(rule.id);
+  }
+  if (rules.length === 0) return [];
+  return apiClient.put("/admin/availability/recurring/bulk", { schedule: rules }).then((r) => r.data);
+};
 
 export const adminBlockDay = (date: string, reason?: string) =>
   apiClient

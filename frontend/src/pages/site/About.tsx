@@ -1,8 +1,5 @@
 import { SALON } from "../../data/catalog";
-import { useStore } from "../../store/store";
-import { ButtonLink } from "../../ui/Button";
-import { Container, Divider, Reveal, SectionHeading } from "../../ui/bits";
-import { StylistCard } from "../../ui/cards";
+import { Container, Divider, Reveal } from "../../ui/bits";
 import Photo from "../../ui/Photo";
 import { FinalCta } from "./Home";
 
@@ -30,7 +27,6 @@ const CHAPTERS = [
 ];
 
 export default function About() {
-  const s = useStore();
   return (
     <>
       <section className="relative overflow-hidden">
@@ -84,27 +80,6 @@ export default function About() {
         </Container>
       </section>
 
-      <section className="bg-cream py-20 md:py-28">
-        <Container>
-          <SectionHeading
-            eyebrow="Your stylist"
-            title="Meet Chioma"
-            sub="She does every appointment herself."
-            action={
-              <ButtonLink to="/book" arrow>
-                Book with Chioma
-              </ButtonLink>
-            }
-          />
-          <div className="max-w-xs">
-            {s.stylists
-              .filter((x) => x.active)
-              .map((st) => (
-                <StylistCard key={st.id} stylist={st} />
-              ))}
-          </div>
-        </Container>
-      </section>
       <FinalCta />
     </>
   );

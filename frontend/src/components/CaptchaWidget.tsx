@@ -6,6 +6,7 @@ const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render
 declare global {
   interface Window {
     turnstile?: {
+      ready: (callback: () => void) => void;
       render: (el: HTMLElement, opts: Record<string, unknown>) => string;
       remove: (widgetId: string) => void;
     };
@@ -14,6 +15,8 @@ declare global {
 
 /**
  * Cloudflare Turnstile. The token is sent as captcha_token on POST /api/bookings/.
+ * Error 110200 ("Unable to connect to website") means this page's hostname is
+ * not on the widget's allow list. Turnstile retries that forever unless we stop it.
  */
 export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,17 +29,36 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
     let cancelled = false;
     let widgetId: string | undefined;
 
-    const mount = () => {
-      if (cancelled || !containerRef.current || !window.turnstile || widgetId) return;
-      widgetId = window.turnstile.render(containerRef.current, {
+    const render = () => {
+      const el = containerRef.current;
+      const turnstile = window.turnstile;
+      if (cancelled || !el || !turnstile || widgetId) return;
+      const box = el.getBoundingClientRect();
+      const opacity = Number.parseFloat(getComputedStyle(el).opacity);
+      // The booking step fades in. Rendering during that animation makes
+      // Turnstile fail the challenge and refresh itself.
+      if (box.width < 8 || opacity < 0.99) {
+        requestAnimationFrame(render);
+        return;
+      }
+      widgetId = turnstile.render(el, {
         sitekey: SITE_KEY,
+        retry: "auto",
+        "retry-interval": 8000,
         callback: (token: string) => {
           setProblem(null);
           onVerifyRef.current(token);
         },
-        "error-callback": () => {
-          setProblem("The human check couldn't load. Please refresh and try again.");
+        "error-callback": (code: string) => {
           onVerifyRef.current("");
+          if (code === "110200") {
+            setProblem(
+              `Cloudflare is blocking this check because “${window.location.hostname}” is not an allowed address for the widget. In Cloudflare, open Turnstile, edit this widget, and add that hostname. The box will keep refreshing until you do.`,
+            );
+            return true;
+          }
+          setProblem("The human check couldn't load. Please refresh and try again.");
+          return false;
         },
         "expired-callback": () => {
           setProblem("That check expired. Please confirm it again.");
@@ -49,6 +71,11 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
       });
     };
 
+    const mount = () => {
+      if (cancelled || !window.turnstile) return;
+      window.turnstile.ready(render);
+    };
+
     if (window.turnstile) {
       mount();
     } else {
@@ -59,8 +86,8 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
         const script = document.createElement("script");
         script.src = SCRIPT_SRC;
         script.async = true;
-        script.defer = true;
         script.onload = mount;
+        script.onerror = () => setProblem("The human check couldn't be reached. Please refresh and try again.");
         document.head.appendChild(script);
       }
     }
@@ -82,7 +109,11 @@ export default function CaptchaWidget({ onVerify }: { onVerify: (token: string) 
   return (
     <div>
       <div ref={containerRef} className="min-h-16" />
-      {problem ? <p className="mt-2 text-sm text-error">{problem}</p> : null}
+      {problem ? (
+        <p className="mt-2 text-sm text-error" role="alert">
+          {problem}
+        </p>
+      ) : null}
     </div>
   );
 }
